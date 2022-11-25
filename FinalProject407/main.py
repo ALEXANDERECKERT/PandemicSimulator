@@ -23,21 +23,25 @@ for z in range(numberOfRounds):
     currentNumInfections = 0
     populationArray[0].infectionStatus = 1
     populationArray[0].turnsRemaining = lengthOfInfection
-    while x < totalPopulation :
+    while x < totalPopulation -1 :
         y = x + 1
-        if populationArray[x].turnsRemaining > 0:
-            if populationArray[x].infectionStatus == 1:
-                while y < totalPopulation:
-                    if random.random() <= Alpha:
+
+        while y < totalPopulation:
+            if (populationArray[x].turnsRemaining > 0 and populationArray[x].infectionStatus == 1) or (populationArray[y].turnsRemaining > 0 and populationArray[y].infectionStatus == 1):
+                if random.random() <= Alpha:
+                    if random.random() <= Beta:
                         if populationArray[y].infectionStatus == 0:
-                            if random.random() <= Beta:
-                                populationArray[y].infectionStatus = 1
-                                #negative one turn remaining avoids the node infecting others until the next round
-                                populationArray[y].turnsRemaining = -1
-                    y += 1
-            populationArray[x].turnsRemaining -= 1
-        elif populationArray[x].turnsRemaining == -1:
-            populationArray[x].turnsRemaining = lengthOfInfection
+                            populationArray[y].infectionStatus = 1
+                           #negative one turn remaining avoids the node infecting others until the next round
+                            populationArray[y].turnsRemaining = -1
+                        elif populationArray[x] == 0:
+                            populationArray[x].infectionStatus = 1
+                            populationArray[x].turnsRemaining = -1
+
+            elif populationArray[x].turnsRemaining == -1:
+                populationArray[x].turnsRemaining = lengthOfInfection
+            y += 1
+        
 
 
         x += 1
