@@ -13,17 +13,21 @@ numberOfRounds = 2000
 lengthOfInfection = 20
 lengthOfImmunity = 10
 vaccineSuccessRate = .95
+vaccineReductionPerRound = .05
 vaccineIntroductionRound = 50
 vaccineAcceptanceRate = .95
 Alpha = .01
 Beta = .01
 for x in range(totalPopulation):
-  populationArray.append(person.Person(0,0,0,0,random.random()))
+    #can replace vaccine introduction round
+    populationArray.append(person.Person(0,0,0,0,random.random(),0,vaccineSuccessRate,random.randint(vaccineIntroductionRound,numberOfRounds)))
+
 
 plot_round = []
 susceptible = []
 infected = []
 
+populationArray[0].wasInfected = 1
 
 populationArray[0].infectionStatus = 1
 populationArray[0].turnsRemaining = lengthOfInfection
@@ -41,17 +45,19 @@ for z in range(numberOfRounds):
                 if random.random() <= Alpha:
                     if random.random() <= Beta:
                         if populationArray[y].infectionStatus == 0:
-                            if z < vaccineIntroductionRound or populationArray[y].vaccineStatus > vaccineAcceptanceRate or random.random() >= vaccineSuccessRate:
+                            if z < populationArray[y].vaccineIntroductionRound or populationArray[y].vaccineStatus > vaccineAcceptanceRate or random.random() >= populationArray[y].vaccineSuccessRate:
 
                                 populationArray[y].infectionStatus = 1
                                 populationArray[y].turnsRemaining = -1
+                                populationArray[y].wasInfected = 1
                                 populationArray[x].infectionsCaused += 1
                                 totalPeopleInfected +=1
                            #negative one turn remaining avoids the node infecting others until the next round
                             populationArray[y].turnsRemaining = -1
                         elif populationArray[x].infectionStatus == 0:
-                            if z < vaccineIntroductionRound or populationArray[x].vaccineStatus > vaccineAcceptanceRate or random.random() >= vaccineSuccessRate:
+                            if z < populationArray[x].vaccineIntroductionRound or populationArray[x].vaccineStatus > vaccineAcceptanceRate or random.random() >= populationArray[x].vaccineSuccessRate:
                                 populationArray[x].infectionStatus = 1
+                                populationArray[x].wasInfected = 1
                                 populationArray[x].turnsRemaining = -1
                                 populationArray[y].infectionsCaused += 1
                                 totalPeopleInfected +=1
@@ -76,11 +82,15 @@ for z in range(numberOfRounds):
             if populationArray[x].immunityRemaining <= 0:
                 populationArray[x].infectionStatus = 0
                 populationArray[x].turnsRemaining = -1
+        populationArray[x].vaccineSuccessRate -= vaccineReductionPerRound
         x += 1
+    totalPeopleInfected = 0
     for k in range(totalPopulation):
 
         if populationArray[k].infectionStatus == 1:
             currentNumInfections += 1
+        if populationArray[k].wasInfected == 1:
+            totalPeopleInfected += 1
 
     print("Round: "+str(z) +" currently infected: -->" +str(currentNumInfections) + "total infections: -->"+str(totalPeopleInfected))
     plot_round.append(z)
