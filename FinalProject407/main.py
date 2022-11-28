@@ -12,7 +12,7 @@ populationArray = list()
 numberOfRounds = 2000
 lengthOfInfection = 20
 lengthOfImmunity = 0
-Alpha = .25
+Alpha = .05
 Beta = .01
 for x in range(totalPopulation):
   populationArray.append(person.Person(0,0,0,0))
@@ -67,7 +67,7 @@ for z in range(numberOfRounds):
 
         if populationArray[x].infectionStatus == 2:
             populationArray[x].immunityRemaining -= 1
-            if populationArray[x].immunityRemaining == 0:
+            if populationArray[x].immunityRemaining <= 0:
                 populationArray[x].infectionStatus = 0
                 populationArray[x].turnsRemaining = -1
         x += 1
