@@ -8,8 +8,9 @@ import random
 import matplotlib.pyplot as plt
 totalPopulation = 1000
 totalPeopleInfected = 0
+totalPeopleImmune = 0
 populationArray = list()
-numberOfRounds = 2000
+numberOfRounds = 365
 lengthOfInfection = 20
 lengthOfImmunity = 10
 vaccineSuccessRate = 1
@@ -27,6 +28,7 @@ for x in range(totalPopulation):
 plot_round = []
 susceptible = []
 infected = []
+immune = []
 
 
 populationArray[0].infectionStatus = 1
@@ -36,6 +38,7 @@ for z in range(numberOfRounds):
     x = 0
     y = 0
     currentNumInfections = 0
+    currentNumImmune = 0
 
     while x < totalPopulation :
         y = x + 1
@@ -88,10 +91,14 @@ for z in range(numberOfRounds):
         if populationArray[k].infectionStatus == 1:
             currentNumInfections += 1
 
+        if populationArray[k].infectionStatus == 2:
+            currentNumImmune += 1
+
     print("Round: "+str(z) +" currently infected: -->" +str(currentNumInfections) + "total infections: -->"+str(totalPeopleInfected))
     plot_round.append(z)
-    susceptible.append(totalPopulation - currentNumInfections)
+    susceptible.append(totalPopulation - (currentNumInfections + currentNumImmune))
     infected.append(currentNumInfections)
+    immune.append(currentNumImmune)
 sum = 0
 avg = 0
 for k in range(totalPopulation):
@@ -103,6 +110,7 @@ plt.xlabel('Round')
 plt.ylabel('Population')
 plt.plot(plot_round, susceptible, label = "Susceptible", color = "blue")
 plt.plot(plot_round, infected, label = "Infected", color = "red")
+plt.plot(plot_round, immune, label = "Immune", color = "green")
 plt.legend()
 plt.show()
 
