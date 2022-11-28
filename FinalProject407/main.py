@@ -7,27 +7,30 @@ import person
 import random
 import matplotlib.pyplot as plt
 totalPopulation = 1000
+totalPeopleInfected = 0
 populationArray = list()
 numberOfRounds = 2000
 lengthOfInfection = 20
-Alpha = .005
+lengthOfImmunity = 0
+Alpha = .25
 Beta = .01
 for x in range(totalPopulation):
-  populationArray.append(person.Person(0,0))
+  populationArray.append(person.Person(0,0,0,0))
 
 plot_round = []
 susceptible = []
 infected = []
 
 
-
+populationArray[0].infectionStatus = 1
+populationArray[0].turnsRemaining = lengthOfInfection
+totalPeopleInfected += 1
 for z in range(numberOfRounds):
     x = 0
     y = 0
     currentNumInfections = 0
-    populationArray[0].infectionStatus = 1
-    populationArray[0].turnsRemaining = lengthOfInfection
-    while x < totalPopulation -1 :
+
+    while x < totalPopulation :
         y = x + 1
 
         while y < totalPopulation:
@@ -36,28 +39,54 @@ for z in range(numberOfRounds):
                     if random.random() <= Beta:
                         if populationArray[y].infectionStatus == 0:
                             populationArray[y].infectionStatus = 1
+                            populationArray[y].turnsRemaining = -1
+                            populationArray[x].infectionsCaused += 1
+                            totalPeopleInfected +=1
                            #negative one turn remaining avoids the node infecting others until the next round
                             populationArray[y].turnsRemaining = -1
-                        elif populationArray[x] == 0:
+                        elif populationArray[x].infectionStatus == 0:
                             populationArray[x].infectionStatus = 1
                             populationArray[x].turnsRemaining = -1
+                            populationArray[y].infectionsCaused += 1
+                            totalPeopleInfected +=1
 
-            elif populationArray[x].turnsRemaining == -1:
-                populationArray[x].turnsRemaining = lengthOfInfection
+
+
+
             y += 1
         
+        if populationArray[x].turnsRemaining == -1:
+            populationArray[x].turnsRemaining = lengthOfInfection
 
+        elif populationArray[x].turnsRemaining == 0:
+            if populationArray[x].infectionStatus == 1:
+                populationArray[x].infectionStatus = 2
+                populationArray[x].immunityRemaining = lengthOfImmunity
+        elif populationArray[x].turnsRemaining > 0:
+            populationArray[x].turnsRemaining -= 1
 
+        if populationArray[x].infectionStatus == 2:
+            populationArray[x].immunityRemaining -= 1
+            if populationArray[x].immunityRemaining == 0:
+                populationArray[x].infectionStatus = 0
+                populationArray[x].turnsRemaining = -1
         x += 1
     for k in range(totalPopulation):
+
         if populationArray[k].infectionStatus == 1:
             currentNumInfections += 1
-    print("Round: "+str(z) +" -->" +str(currentNumInfections))
+
+    print("Round: "+str(z) +" currently infected: -->" +str(currentNumInfections) + "total infections: -->"+str(totalPeopleInfected))
     plot_round.append(z)
     susceptible.append(totalPopulation - currentNumInfections)
     infected.append(currentNumInfections)
-
-
+sum = 0
+avg = 0
+for k in range(totalPopulation):
+        sum += populationArray[k].infectionsCaused
+        avg = sum/totalPopulation
+        print("Person #"+str(k) +"caused "+str(populationArray[k].infectionsCaused)+" infections \n")
+print("The average infections cause per person was: "+ str(avg))
 plt.xlabel('Round')
 plt.ylabel('Population')
 plt.plot(plot_round, susceptible, label = "Susceptible", color = "blue")
