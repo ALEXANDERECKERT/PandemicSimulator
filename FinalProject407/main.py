@@ -11,11 +11,14 @@ totalPeopleInfected = 0
 populationArray = list()
 numberOfRounds = 2000
 lengthOfInfection = 20
-lengthOfImmunity = 0
-Alpha = .05
+lengthOfImmunity = 10
+vaccineSuccessRate = .95
+vaccineIntroductionRound = 50
+vaccineAcceptanceRate = .95
+Alpha = .01
 Beta = .01
 for x in range(totalPopulation):
-  populationArray.append(person.Person(0,0,0,0))
+  populationArray.append(person.Person(0,0,0,0,random.random()))
 
 plot_round = []
 susceptible = []
@@ -38,17 +41,20 @@ for z in range(numberOfRounds):
                 if random.random() <= Alpha:
                     if random.random() <= Beta:
                         if populationArray[y].infectionStatus == 0:
-                            populationArray[y].infectionStatus = 1
-                            populationArray[y].turnsRemaining = -1
-                            populationArray[x].infectionsCaused += 1
-                            totalPeopleInfected +=1
+                            if z < vaccineIntroductionRound or populationArray[y].vaccineStatus > vaccineAcceptanceRate or random.random() >= vaccineSuccessRate:
+
+                                populationArray[y].infectionStatus = 1
+                                populationArray[y].turnsRemaining = -1
+                                populationArray[x].infectionsCaused += 1
+                                totalPeopleInfected +=1
                            #negative one turn remaining avoids the node infecting others until the next round
                             populationArray[y].turnsRemaining = -1
                         elif populationArray[x].infectionStatus == 0:
-                            populationArray[x].infectionStatus = 1
-                            populationArray[x].turnsRemaining = -1
-                            populationArray[y].infectionsCaused += 1
-                            totalPeopleInfected +=1
+                            if z < vaccineIntroductionRound or populationArray[x].vaccineStatus > vaccineAcceptanceRate or random.random() >= vaccineSuccessRate:
+                                populationArray[x].infectionStatus = 1
+                                populationArray[x].turnsRemaining = -1
+                                populationArray[y].infectionsCaused += 1
+                                totalPeopleInfected +=1
 
 
 
